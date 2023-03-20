@@ -1,8 +1,6 @@
 package controller
 
 import (
-	"fmt"
-
 	"github.com/casbin/casbin/v2"
 	"github.com/gofiber/fiber/v2"
 )
@@ -19,7 +17,7 @@ func GetUser(c *fiber.Ctx) error {
 func CreateUser(e *casbin.Enforcer) fiber.Handler {
 	return func(c *fiber.Ctx) error {
 		// Write into Casbin rule DB
-		e.AddGroupingPolicy(fmt.Sprint("3"), "user")
+		e.AddGroupingPolicy("3", "user")
 		return c.JSON(fiber.Map{
 			"data":    "new user registered successfully",
 			"message": "ok",

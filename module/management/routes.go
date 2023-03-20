@@ -9,6 +9,10 @@ import (
 )
 
 func Setup(router fiber.Router, enforcer *casbin.Enforcer) {
+	auth := router.Group("/auth")
+	auth.Post("/login", controller.Login)
+	auth.Post("/refresh_token", controller.RefreshToken)
+
 	admin := router.Group("/admin")
 	adminUser := admin.Group("/users", middleware.AuthorizeJwt())
 	adminUser.Get("/", middleware.AuthorizeCasbin(enforcer), controller.GetUsers)

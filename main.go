@@ -3,7 +3,6 @@ package main
 import (
 	"boilerplate/config"
 	"boilerplate/middleware"
-	"boilerplate/module/auth"
 	"boilerplate/module/management"
 	"runtime"
 
@@ -32,9 +31,8 @@ func main() {
 		return c.SendString("Hello, World!")
 	})
 
-	api := app.Group("/api")        // Public route
-	management.Setup(api, enforcer) // Admin route
-	auth.Setup(api, enforcer)
+	api := app.Group("/api")        // route
+	management.Setup(api, enforcer) // management route
 
 	app.Listen(":3000")
 }

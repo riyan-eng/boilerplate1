@@ -1,7 +1,7 @@
 package controller
 
 import (
-	"boilerplate/module/auth/controller/dto"
+	"boilerplate/module/management/controller/dto"
 	"boilerplate/util"
 	"time"
 
