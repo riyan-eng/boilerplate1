@@ -24,14 +24,14 @@ func ConnDatabase() {
 		log.Fatal("can't connect to database")
 	}
 
-	sqlDB, err := Database.DB()
+	sqlDB, _ := Database.DB()
 	sqlDB.SetMaxIdleConns(10)
 	sqlDB.SetMaxOpenConns(100)
 	sqlDB.SetConnMaxLifetime(time.Hour)
 	if err := sqlDB.Ping(); err != nil {
-		fmt.Println("can't ping to database")
+		log.Fatal("can't ping to database")
 	}
 
-	fmt.Println("connection Opened to database")
-	Database.AutoMigrate(&migration.Users{})
+	fmt.Println("connection opened to database")
+	Database.AutoMigrate(&migration.Companies{}, &migration.UserTypes{}, &migration.Users{}, &migration.UserDatas{})
 }

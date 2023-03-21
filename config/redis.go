@@ -1,7 +1,9 @@
 package config
 
 import (
+	"context"
 	"fmt"
+	"log"
 
 	"github.com/redis/go-redis/v9"
 )
@@ -15,4 +17,9 @@ func ConnRedis() {
 		Password: "", // no password set
 		DB:       0,  // use default DB
 	})
+	ctx := context.Background()
+	if err := Redis.Ping(ctx).Err(); err != nil {
+		log.Fatal("can't ping to redis")
+	}
+	fmt.Println("connection opened to redis")
 }
