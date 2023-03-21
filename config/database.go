@@ -33,5 +33,7 @@ func ConnDatabase() {
 	}
 
 	fmt.Println("connection opened to database")
-	Database.AutoMigrate(&migration.Companies{}, &migration.UserTypes{}, &migration.Users{}, &migration.UserDatas{})
+	Database.AutoMigrate(
+		&migration.Companies{}, &migration.UserTypes{}, &migration.Users{}, &migration.UserDatas{}, &migration.Coas{}, &migration.Transactions{}, &migration.Journals{},
+	)
 }
