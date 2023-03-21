@@ -8,8 +8,8 @@ import (
 )
 
 type AuthenticationRepository interface {
-	Login(*model.LoginRequest) *model.LoginResponse
-	Register(*model.RegisterRequest) *model.RegisterResponse
+	Login(*model.LoginRequest) model.LoginResponse
+	Register(*model.RegisterRequest) model.RegisterResponse
 }
 
 type authenticationRepository struct {
@@ -22,14 +22,14 @@ func NewAuthenticationRepository(database *gorm.DB) AuthenticationRepository {
 	}
 }
 
-func (repository *authenticationRepository) Login(loginModelRequest *model.LoginRequest) (loginModelResponse *model.LoginResponse) {
-	query := `select * from management.user`
+func (repository *authenticationRepository) Login(loginModelRequest *model.LoginRequest) (loginModelResponse model.LoginResponse) {
+	query := fmt.Sprintf(`select u.id, u.username, u.user_type_code as user_type, u."password", u.company_id  from users u 
+	where u.username like '%%%v' or u.email like '%%%v' or u.phone_number like '%%%v'`, loginModelRequest.Username, loginModelRequest.Username, loginModelRequest.Username)
 	loginModelResponse.Error = repository.Database.WithContext(loginModelRequest.Context).Raw(query).Scan(&loginModelResponse.User).Error
 	return
 }
 
-func (repository *authenticationRepository) Register(registerModelRequest *model.RegisterRequest) (registerModelResponse *model.RegisterResponse) {
-	registerModelResponse = &model.RegisterResponse{}
+func (repository *authenticationRepository) Register(registerModelRequest *model.RegisterRequest) (registerModelResponse model.RegisterResponse) {
 	query := fmt.Sprintf(`
 	insert into users(username, user_type_code, email, password, phone_number, company_id)values
 	('%v', '%v', '%v', '%v', '%v', '%v') 

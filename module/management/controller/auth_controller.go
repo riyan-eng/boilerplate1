@@ -5,7 +5,6 @@ import (
 	"boilerplate/module/management/service"
 	"boilerplate/module/management/service/entity"
 	"boilerplate/util"
-	"fmt"
 
 	"github.com/casbin/casbin/v2"
 	"github.com/gofiber/fiber/v2"
@@ -34,7 +33,6 @@ func (controller *authenticationControllerImpl) Login(c *fiber.Ctx) error {
 		)
 	}
 	if err := util.ValidateRequest(loginControllerRequest); err != nil {
-		fmt.Println(err)
 		return c.Status(fiber.StatusBadRequest).JSON(
 			util.Response{Data: "err", Message: "bad"},
 		)

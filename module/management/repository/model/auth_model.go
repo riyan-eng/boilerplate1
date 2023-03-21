@@ -14,12 +14,11 @@ type LoginResponse struct {
 }
 
 type loginResponseUser struct {
-	ID          string
-	Username    string
-	UserType    string
-	CompanyID   string
-	Email       string
-	PhoneNumber string
+	ID        string `gorm:"column:id"`
+	Username  string `gorm:"column:username"`
+	Password  string `gorm:"column:password"`
+	UserType  string `gorm:"column:user_type"`
+	CompanyID string `gorm:"column:company_id"`
 }
 
 type RegisterRequest struct {

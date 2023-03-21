@@ -9,9 +9,9 @@ import (
 )
 
 type AuthenticationService interface {
-	Login(*entity.LoginRequest) *entity.LoginReponse
-	Refresh(*entity.RefreshRequest) *entity.RefreshReponse
-	Register(*entity.RegisterRequest) *entity.RegisterResponse
+	Login(*entity.LoginRequest) entity.LoginReponse
+	Refresh(*entity.RefreshRequest) entity.RefreshReponse
+	Register(*entity.RegisterRequest) entity.RegisterResponse
 }
 
 type authenticationServiceImpl struct {
@@ -24,11 +24,15 @@ func NewAuthenticationService(authentication repository.AuthenticationRepository
 	}
 }
 
-func (service *authenticationServiceImpl) Login(loginEntityRequest *entity.LoginRequest) (loginEntityReponse *entity.LoginReponse) {
+func (service *authenticationServiceImpl) Login(loginEntityRequest *entity.LoginRequest) (loginEntityReponse entity.LoginReponse) {
 	loginModelRequest := model.LoginRequest{Context: loginEntityRequest.Context, Username: loginEntityRequest.Username, Password: loginEntityRequest.Password}
 	loginModelResponse := service.Authenticaton.Login(&loginModelRequest)
 	if loginModelResponse.Error != nil {
 		loginEntityReponse.Error = errors.New("internal server error")
+		return
+	}
+	if !util.VerifyHash(loginModelResponse.User.Password, loginEntityRequest.Password) {
+		loginEntityReponse.Error = errors.New("invalid usename or password")
 		return
 	}
 	loginEntityReponse.AccessToken,
@@ -37,7 +41,7 @@ func (service *authenticationServiceImpl) Login(loginEntityRequest *entity.Login
 	return
 }
 
-func (service *authenticationServiceImpl) Refresh(refreshEntityRequest *entity.RefreshRequest) (refreshEntityResponse *entity.RefreshReponse) {
+func (service *authenticationServiceImpl) Refresh(refreshEntityRequest *entity.RefreshRequest) (refreshEntityResponse entity.RefreshReponse) {
 	claims, err := util.ParseToken(refreshEntityRequest.RefreshToken, "AllYourBaseRefresh")
 	if err != nil {
 		refreshEntityResponse.Error = errors.New("not authorized")
@@ -54,8 +58,7 @@ func (service *authenticationServiceImpl) Refresh(refreshEntityRequest *entity.R
 	return
 }
 
-func (service *authenticationServiceImpl) Register(registerEntityRequest *entity.RegisterRequest) (registerEntityResponse *entity.RegisterResponse) {
-	registerEntityResponse = &entity.RegisterResponse{}
+func (service *authenticationServiceImpl) Register(registerEntityRequest *entity.RegisterRequest) (registerEntityResponse entity.RegisterResponse) {
 	registerModelRequest := model.RegisterRequest{Context: registerEntityRequest.Context, Username: registerEntityRequest.Username, Password: util.GenerateHash(registerEntityRequest.Password), CompanyID: registerEntityRequest.CompanyID, Email: registerEntityRequest.Email, PhoneNumber: registerEntityRequest.PhoneNumber}
 	registerModelResponse := service.Authenticaton.Register(&registerModelRequest)
 	if registerModelResponse.Error != nil {
