@@ -25,84 +25,100 @@ func NewAuthenticationController(authentocation service.AuthenticationService) A
 	}
 }
 
+// @Tags				Authentication
+// @Summary			Create new user based on paramters
+// @Description	Create new user
+// @Accept			json
+// @Param				account	body	dto.LoginRequest	true	"Add account"
+// @Success 200 {object} object
+// @Failure 400,500 {object} object
+// @Router /api/auth/login [post]
 func (controller *authenticationControllerImpl) Login(c *fiber.Ctx) error {
-	loginControllerRequest := new(dto.LoginRequest)
-	if err := c.BodyParser(&loginControllerRequest); err != nil {
+	dtoRequest := new(dto.LoginRequest)
+	if err := c.BodyParser(&dtoRequest); err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(
 			util.Response{Data: err.Error(), Message: "bad"},
 		)
 	}
-	if err := util.ValidateRequest(loginControllerRequest); err != nil {
+	if err := util.ValidateRequest(dtoRequest); err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(
 			util.Response{Data: "err", Message: "bad"},
 		)
 	}
-	loginServiceRequest := entity.LoginRequest{
-		Context: c.Context(), Username: loginControllerRequest.Username, Password: loginControllerRequest.Password, Issuer: string(c.Request().Host()),
+	entityRequest := entity.LoginRequest{
+		Context: c.Context(), Username: dtoRequest.Username, Password: dtoRequest.Password, Issuer: string(c.Request().Host()),
 	}
-	loginServiceResponse := controller.Authentication.Login(&loginServiceRequest)
-	if loginServiceResponse.Error != nil {
+	entityResponse := controller.Authentication.Login(&entityRequest)
+	if entityResponse.Error != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(
-			util.Response{Data: loginServiceResponse.Error.Error(), Message: "bad"},
+			util.Response{Data: entityResponse.Error.Error(), Message: "bad"},
 		)
 	}
-	loginControllerResponse := dto.LoginResponse{
-		AccessToken: loginServiceResponse.AccessToken, RefreshToken: loginServiceResponse.RefreshToken,
+	dtoResponse := dto.LoginResponse{
+		AccessToken: entityResponse.AccessToken, RefreshToken: entityResponse.RefreshToken,
 	}
 	return c.Status(fiber.StatusOK).JSON(
-		util.Response{Data: loginControllerResponse, Message: "ok"},
+		util.Response{Data: dtoResponse, Message: "ok"},
 	)
 }
 
+// @Tags				Authentication
+// @Summary			Create new user based on paramters
+// @Description	Create new user
+// @Accept			json
+// @Param				account	body	dto.RefreshRequest	true	"Add account"
+// @Success 200 {object} object
+// @Failure 400,500 {object} object
+// @Router /api/auth/refresh_token [post]
 func (controller *authenticationControllerImpl) Refresh(c *fiber.Ctx) error {
-	refreshControllerRequest := new(dto.RefreshRequest)
-	if err := c.BodyParser(&refreshControllerRequest); err != nil {
+	dtoRequest := new(dto.RefreshRequest)
+	if err := c.BodyParser(&dtoRequest); err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(
 			util.Response{Data: err.Error(), Message: "bad"},
 		)
 	}
-	if err := util.ValidateRequest(refreshControllerRequest); err != nil {
+	if err := util.ValidateRequest(dtoRequest); err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(
 			util.Response{Data: err, Message: "bad"},
 		)
 	}
-	refreshServiceRequest := entity.RefreshRequest{
-		Context: c.Context(), RefreshToken: refreshControllerRequest.RefreshToken, Issuer: string(c.Request().Host()),
+	entityRequest := entity.RefreshRequest{
+		Context: c.Context(), RefreshToken: dtoRequest.RefreshToken, Issuer: string(c.Request().Host()),
 	}
-	refreshServiceResponse := controller.Authentication.Refresh(&refreshServiceRequest)
-	if refreshServiceResponse.Error != nil {
+	entityResponse := controller.Authentication.Refresh(&entityRequest)
+	if entityResponse.Error != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(
-			util.Response{Data: refreshServiceResponse.Error.Error(), Message: "bad"},
+			util.Response{Data: entityResponse.Error.Error(), Message: "bad"},
 		)
 	}
-	refreshControllerResponse := dto.RefreshResponse{
-		AccessToken: refreshServiceResponse.AccessToken, RefreshToken: refreshServiceResponse.RefreshToken,
+	dtoResponse := dto.RefreshResponse{
+		AccessToken: entityResponse.AccessToken, RefreshToken: entityResponse.RefreshToken,
 	}
 	return c.Status(fiber.StatusOK).JSON(
-		util.Response{Data: refreshControllerResponse, Message: "ok"},
+		util.Response{Data: dtoResponse, Message: "ok"},
 	)
 }
 
 func (controller *authenticationControllerImpl) Register(enforcer *casbin.Enforcer) fiber.Handler {
 	return func(c *fiber.Ctx) error {
-		registerControllerRequest := new(dto.RegisterRequest)
-		if err := c.BodyParser(&registerControllerRequest); err != nil {
+		dtoRequest := new(dto.RegisterRequest)
+		if err := c.BodyParser(&dtoRequest); err != nil {
 			return c.Status(fiber.StatusBadRequest).JSON(
 				util.Response{Data: err.Error(), Message: "bad"},
 			)
 		}
-		if err := util.ValidateRequest(registerControllerRequest); err != nil {
+		if err := util.ValidateRequest(dtoRequest); err != nil {
 			return c.Status(fiber.StatusBadRequest).JSON(
 				util.Response{Data: err, Message: "bad"},
 			)
 		}
-		registerServiceRequest := entity.RegisterRequest{
-			Context: c.Context(), Enforcer: enforcer, Username: registerControllerRequest.Username, Password: registerControllerRequest.Password, CompanyID: registerControllerRequest.CompanyID, Email: registerControllerRequest.Email, PhoneNumber: registerControllerRequest.PhoneNumber,
+		entityRequest := entity.RegisterRequest{
+			Context: c.Context(), Enforcer: enforcer, Username: dtoRequest.Username, Password: dtoRequest.Password, CompanyID: dtoRequest.CompanyID, Email: dtoRequest.Email, PhoneNumber: dtoRequest.PhoneNumber,
 		}
-		registerServiceResponse := controller.Authentication.Register(&registerServiceRequest)
-		if registerServiceResponse.Error != nil {
+		entityResponse := controller.Authentication.Register(&entityRequest)
+		if entityResponse.Error != nil {
 			return c.Status(fiber.StatusBadRequest).JSON(
-				util.Response{Data: registerServiceResponse.Error.Error(), Message: "bad"},
+				util.Response{Data: entityResponse.Error.Error(), Message: "bad"},
 			)
 		}
 		return c.Status(fiber.StatusOK).JSON(

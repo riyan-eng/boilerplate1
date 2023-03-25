@@ -36,6 +36,7 @@ type Users struct {
 	UserType     UserTypes `gorm:"foreignKey:UserTypeCode;references:code;constraint:OnUpdate:CASCADE,OnDelete:SET NULL;"`
 	Email        string    `gorm:"column:email"`
 	Password     string    `gorm:"column:password"`
+	Pin          string    `gorm:"column:pin"`
 	PhoneNumber  string    `gorm:"column:phone_number"`
 	CompanyID    string    `gorm:"column:company_id"`
 	Company      Companies `gorm:"foreignKey:CompanyID;references:id;constraint:OnUpdate:CASCADE,OnDelete:SET NULL;"`
@@ -54,12 +55,18 @@ type Coas struct {
 }
 
 type Transactions struct {
-	ID          string    `gorm:"primaryKey; default:gen_random_uuid()"`
-	Code        string    `gorm:"column:code; unique"`
-	Description string    `gorm:"column:description"`
-	Amount      float64   `gorm:"column:amount"`
-	CreatedAt   time.Time `gorm:"autoCreateTime; default:current_timestamp"`
-	UpdatedAt   time.Time `gorm:"autoCreateTime; default:current_timestamp"`
+	ID            string    `gorm:"primaryKey; default:gen_random_uuid()"`
+	Code          string    `gorm:"column:code; unique"`
+	Description   string    `gorm:"column:description"`
+	Amount        float64   `gorm:"column:amount"`
+	CreatedAt     time.Time `gorm:"autoCreateTime; default:current_timestamp"`
+	UpdatedAt     time.Time `gorm:"autoCreateTime; default:current_timestamp"`
+	UserID        string    `gorm:"column:user_id"`
+	User          Users     `gorm:"foreignKey:UserID;references:id;constraint:OnUpdate:CASCADE,OnDelete:SET NULL;"`
+	CompanyID     string    `gorm:"column:company_id"`
+	Company       Companies `gorm:"foreignKey:CompanyID;references:id;constraint:OnUpdate:CASCADE,OnDelete:SET NULL;"`
+	CreatedBy     string    `gorm:"column:created_by"`
+	CreatedByUser Users     `gorm:"foreignKey:CreatedBy;references:id;constraint:OnUpdate:CASCADE,OnDelete:SET NULL;"`
 }
 
 type Journals struct {
@@ -73,4 +80,10 @@ type Journals struct {
 	Amount          float64      `gorm:"column:amount"`
 	CreatedAt       time.Time    `gorm:"autoCreateTime; default:current_timestamp"`
 	UpdatedAt       time.Time    `gorm:"autoCreateTime; default:current_timestamp"`
+	UserID          string       `gorm:"column:user_id"`
+	User            Users        `gorm:"foreignKey:UserID;references:id;constraint:OnUpdate:CASCADE,OnDelete:SET NULL;"`
+	CompanyID       string       `gorm:"column:company_id"`
+	Company         Companies    `gorm:"foreignKey:CompanyID;references:id;constraint:OnUpdate:CASCADE,OnDelete:SET NULL;"`
+	CreatedBy       string       `gorm:"column:created_by"`
+	CreatedByUser   Users        `gorm:"foreignKey:CreatedBy;references:id;constraint:OnUpdate:CASCADE,OnDelete:SET NULL;"`
 }

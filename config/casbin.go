@@ -3,12 +3,13 @@ package config
 import (
 	"fmt"
 
+	sqladapter "github.com/Blank-Xu/sql-adapter"
 	"github.com/casbin/casbin/v2"
-	gormadapter "github.com/casbin/gorm-adapter/v3"
+	_ "github.com/lib/pq"
 )
 
 func Casbin() *casbin.Enforcer {
-	adapter, err := gormadapter.NewAdapterByDB(Database)
+	adapter, err := sqladapter.NewAdapter(PostgreSQLDB, "postgres", "permissions")
 	if err != nil {
 		panic(fmt.Sprintf("failed to initialize casbin adapter: %v", err))
 	}

@@ -5,9 +5,9 @@ type RefreshRequest struct {
 }
 
 type RefreshResponse struct {
-	AccessToken  string
-	RefreshToken string
-	Expired      int
+	AccessToken  string `json:"access_token"`
+	RefreshToken string `json:"refresh_token"`
+	Expired      int    `json:"expired"`
 }
 
 type LoginRequest struct {
@@ -16,9 +16,9 @@ type LoginRequest struct {
 }
 
 type LoginResponse struct {
-	AccessToken  string
-	RefreshToken string
-	Expired      int
+	AccessToken  string `json:"access_token"`
+	RefreshToken string `json:"refresh_token"`
+	Expired      int    `json:"expired"`
 }
 
 type RegisterRequest struct {

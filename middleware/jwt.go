@@ -61,13 +61,12 @@ func AuthorizeJwt() fiber.Handler {
 				"message": "not authorized!",
 			})
 		}
-
 		c.Locals("userID", claims.UserID)
 		c.Locals("companyID", claims.CompanyID)
 
 		g := new(errgroup.Group)
 		g.Go(func() (err error) {
-			err = config.Redis.Expire(c.Context(), fmt.Sprintf("token-%s", claims.UserID), time.Minute*time.Duration(1)).Err()
+			err = config.Redis.Expire(c.Context(), fmt.Sprintf("token-%s", claims.UserID), time.Minute*time.Duration(15)).Err()
 			return
 		})
 		g.Wait()

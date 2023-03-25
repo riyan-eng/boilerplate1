@@ -12,7 +12,7 @@ import (
 )
 
 func Setup(router fiber.Router, enforcer *casbin.Enforcer) {
-	authRepository := repository.NewAuthenticationRepository(config.Database)
+	authRepository := repository.NewAuthenticationRepository(config.PostgreSQLDB)
 	authService := service.NewAuthenticationService(authRepository)
 	authController := controller.NewAuthenticationController(authService)
 

@@ -3,7 +3,7 @@ package config
 import (
 	"context"
 	"fmt"
-	"log"
+	"os"
 
 	"github.com/redis/go-redis/v9"
 )
@@ -19,7 +19,8 @@ func ConnRedis() {
 	})
 	ctx := context.Background()
 	if err := Redis.Ping(ctx).Err(); err != nil {
-		log.Fatal("can't ping to redis")
+		fmt.Println("redis: can't ping to redis")
+		os.Exit(1)
 	}
-	fmt.Println("connection opened to redis")
+	fmt.Println("redis: connection opened to redis")
 }

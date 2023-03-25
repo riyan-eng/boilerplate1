@@ -1,39 +1,32 @@
 package config
 
 import (
+	"database/sql"
 	"fmt"
 	"log"
+	"os"
 	"time"
 
-	"boilerplate/migration"
-
-	"gorm.io/driver/postgres"
-	"gorm.io/gorm"
+	_ "github.com/lib/pq"
 )
 
-var Database *gorm.DB
+var PostgreSQLDB *sql.DB
 
 func ConnDatabase() {
 	var err error
 	dsn := "host=localhost user=postgres password=riyan dbname=boilerplate1 port=5432 sslmode=disable TimeZone=Asia/Jakarta"
-	Database, err = gorm.Open(postgres.Open(dsn), &gorm.Config{
-		SkipDefaultTransaction: true,
-		PrepareStmt:            true,
-	})
+	PostgreSQLDB, err = sql.Open("postgres", dsn)
 	if err != nil {
-		log.Fatal("can't connect to database")
+		fmt.Println("database: can't connect to database")
+		os.Exit(1)
 	}
 
-	sqlDB, _ := Database.DB()
-	sqlDB.SetMaxIdleConns(10)
-	sqlDB.SetMaxOpenConns(100)
-	sqlDB.SetConnMaxLifetime(time.Hour)
-	if err := sqlDB.Ping(); err != nil {
-		log.Fatal("can't ping to database")
+	PostgreSQLDB.SetMaxIdleConns(10)
+	PostgreSQLDB.SetMaxOpenConns(100)
+	PostgreSQLDB.SetConnMaxLifetime(time.Hour)
+	if err := PostgreSQLDB.Ping(); err != nil {
+		log.Fatal("database: can't ping to database")
 	}
 
-	fmt.Println("connection opened to database")
-	Database.AutoMigrate(
-		&migration.Companies{}, &migration.UserTypes{}, &migration.Users{}, &migration.UserDatas{}, &migration.Coas{}, &migration.Transactions{}, &migration.Journals{},
-	)
+	fmt.Println("database: connection opened to database")
 }

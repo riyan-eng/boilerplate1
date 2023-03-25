@@ -14,11 +14,11 @@ type LoginResponse struct {
 }
 
 type loginResponseUser struct {
-	ID        string `gorm:"column:id"`
-	Username  string `gorm:"column:username"`
-	Password  string `gorm:"column:password"`
-	UserType  string `gorm:"column:user_type"`
-	CompanyID string `gorm:"column:company_id"`
+	ID        string `db:"id"`
+	Username  string `db:"username"`
+	Password  string `db:"password"`
+	UserType  string `db:"user_type"`
+	CompanyID string `db:"company_id"`
 }
 
 type RegisterRequest struct {
@@ -37,6 +37,6 @@ type RegisterResponse struct {
 }
 
 type registerResponseUser struct {
-	ID       string `gorm:"column:id"`
-	UserType string `gorm:"column:user_type_code"`
+	ID       string `db:"id"`
+	UserType string `db:"user_type_code"`
 }

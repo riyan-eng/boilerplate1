@@ -24,50 +24,50 @@ func NewAuthenticationService(authentication repository.AuthenticationRepository
 	}
 }
 
-func (service *authenticationServiceImpl) Login(loginEntityRequest *entity.LoginRequest) (loginEntityReponse entity.LoginReponse) {
-	loginModelRequest := model.LoginRequest{Context: loginEntityRequest.Context, Username: loginEntityRequest.Username, Password: loginEntityRequest.Password}
+func (service *authenticationServiceImpl) Login(entityRequest *entity.LoginRequest) (entityReponse entity.LoginReponse) {
+	loginModelRequest := model.LoginRequest{Context: entityRequest.Context, Username: entityRequest.Username, Password: entityRequest.Password}
 	loginModelResponse := service.Authenticaton.Login(&loginModelRequest)
 	if loginModelResponse.Error != nil {
-		loginEntityReponse.Error = errors.New("internal server error")
+		entityReponse.Error = errors.New("internal server error")
 		return
 	}
-	if !util.VerifyHash(loginModelResponse.User.Password, loginEntityRequest.Password) {
-		loginEntityReponse.Error = errors.New("invalid usename or password")
+	if !util.VerifyHash(loginModelResponse.User.Password, entityRequest.Password) {
+		entityReponse.Error = errors.New("invalid usename or password")
 		return
 	}
-	loginEntityReponse.AccessToken,
-		loginEntityReponse.RefreshToken,
-		loginEntityReponse.Error = util.GenerateJWT(loginEntityRequest.Issuer, loginModelResponse.User.ID, loginModelResponse.User.CompanyID, 15)
+	entityReponse.AccessToken,
+		entityReponse.RefreshToken,
+		entityReponse.Error = util.GenerateJWT(entityRequest.Issuer, loginModelResponse.User.ID, loginModelResponse.User.CompanyID, 15)
 	return
 }
 
-func (service *authenticationServiceImpl) Refresh(refreshEntityRequest *entity.RefreshRequest) (refreshEntityResponse entity.RefreshReponse) {
-	claims, err := util.ParseToken(refreshEntityRequest.RefreshToken, "AllYourBaseRefresh")
+func (service *authenticationServiceImpl) Refresh(entityRequest *entity.RefreshRequest) (entityResponse entity.RefreshReponse) {
+	claims, err := util.ParseToken(entityRequest.RefreshToken, "AllYourBaseRefresh")
 	if err != nil {
-		refreshEntityResponse.Error = errors.New("not authorized")
+		entityResponse.Error = errors.New("not authorized")
 		return
 	}
-	if err := util.ValidateToken(claims, true, refreshEntityRequest.Context); err != nil {
-		refreshEntityResponse.Error = errors.New("not authorized")
+	if err := util.ValidateToken(claims, true, entityRequest.Context); err != nil {
+		entityResponse.Error = errors.New("not authorized")
 		return
 	}
-	refreshEntityResponse.AccessToken,
-		refreshEntityResponse.RefreshToken,
-		refreshEntityResponse.Error =
-		util.GenerateJWT(refreshEntityRequest.Issuer, claims.UserID, claims.CompanyID, 15)
+	entityResponse.AccessToken,
+		entityResponse.RefreshToken,
+		entityResponse.Error =
+		util.GenerateJWT(entityRequest.Issuer, claims.UserID, claims.CompanyID, 15)
 	return
 }
 
-func (service *authenticationServiceImpl) Register(registerEntityRequest *entity.RegisterRequest) (registerEntityResponse entity.RegisterResponse) {
-	registerModelRequest := model.RegisterRequest{Context: registerEntityRequest.Context, Username: registerEntityRequest.Username, Password: util.GenerateHash(registerEntityRequest.Password), CompanyID: registerEntityRequest.CompanyID, Email: registerEntityRequest.Email, PhoneNumber: registerEntityRequest.PhoneNumber}
+func (service *authenticationServiceImpl) Register(entityRequest *entity.RegisterRequest) (entityResponse entity.RegisterResponse) {
+	registerModelRequest := model.RegisterRequest{Context: entityRequest.Context, Username: entityRequest.Username, Password: util.GenerateHash(entityRequest.Password), CompanyID: entityRequest.CompanyID, Email: entityRequest.Email, PhoneNumber: entityRequest.PhoneNumber}
 	registerModelResponse := service.Authenticaton.Register(&registerModelRequest)
 	if registerModelResponse.Error != nil {
-		registerEntityResponse.Error = errors.New("internal server error")
+		entityResponse.Error = errors.New("user has been exist")
 		return
 	}
-	_, casbinErr := registerEntityRequest.Enforcer.AddGroupingPolicy(registerModelResponse.User.ID, registerModelResponse.User.UserType)
+	_, casbinErr := entityRequest.Enforcer.AddGroupingPolicy(registerModelResponse.User.ID, registerModelResponse.User.UserType)
 	if casbinErr != nil {
-		registerEntityResponse.Error = errors.New("internal server error")
+		entityResponse.Error = errors.New("internal server error")
 	}
 	return
 }
