@@ -5,6 +5,7 @@ import (
 	"boilerplate/migration"
 	"boilerplate/module/finance"
 	"boilerplate/module/management"
+	"boilerplate/module/other"
 	"runtime"
 
 	"github.com/gofiber/fiber/v2/middleware/logger"
@@ -49,6 +50,7 @@ func main() {
 	api := app.Group("/api")                      // route
 	management.Setup(api, enforcer)               // management route
 	finance.Setup(api, enforcer)                  // finance route
+	other.Setup(api)                              // finance route
 	app.Get("/swagger/*", swagger.HandlerDefault) // default
 
 	app.Listen(":3000")
